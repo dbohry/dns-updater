@@ -37,7 +37,7 @@ jobs:
         run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o app .
 
       - name: Build Docker image for (x64)
-        run: docker build -t dbohry/dns-updater:arm-latest .
+        run: docker build -t dbohry/dns-updater:x64-latest .
 
       - name: Push Docker image (x64)
         run: docker push dbohry/dns-updater:x64-latest
