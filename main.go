@@ -58,7 +58,11 @@ func main() {
 }
 
 func getCurrentIP() (string, error) {
-	resp, err := http.Get("https://ifconfig.me")
+	ipProvider := os.Getenv("IP_PROVIDER")
+	if ipProvider == "" {
+		ipProvider = "https://api.ipify.org"
+	}
+	resp, err := http.Get(ipProvider)
 	if err != nil {
 		return "", err
 	}
