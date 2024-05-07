@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 )
@@ -27,7 +27,7 @@ func main() {
 		if err != nil {
 			fmt.Printf("%s Error updating DNS: %s\n", time.Now().Format(time.RFC3339), err.Error())
 		} else {
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			resp.Body.Close()
 			if err != nil {
 				fmt.Printf("%s Error reading response body: %s\n", time.Now().Format(time.RFC3339), err.Error())
@@ -47,7 +47,7 @@ func getCurrentIP() (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
-	ip, err := ioutil.ReadAll(resp.Body)
+	ip, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
