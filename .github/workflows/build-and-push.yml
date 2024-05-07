@@ -35,6 +35,3 @@ jobs:
 
       - name: Push Docker image (x64)
         run: docker push dbohry/dns-updater:x64-latest
-
-      - name: Push Docker image to Docker Hub
-        run: docker push dbohry/dns-updater:latest
