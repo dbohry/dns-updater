@@ -33,9 +33,10 @@ func main() {
 			fmt.Printf("%s Failed to retrieve target url from config.json", time.Now().Format(time.RFC3339))
 		} else {
 			fmt.Printf("%s Updating DNS for [dkb.crabdance.com]...\n", time.Now().Format(time.RFC3339))
+			fmt.Printf("%s Calling target url %s\n", time.Now().Format(time.RFC3339), targetUrl)
 		}
 
-		resp, err := http.Get("http://" + targetUrl)
+		resp, err := http.Get(targetUrl)
 		if err != nil {
 			fmt.Printf("%s Error updating DNS: %s\n", time.Now().Format(time.RFC3339), err.Error())
 		} else {
