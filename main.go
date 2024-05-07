@@ -2,11 +2,17 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 )
+
+type Config struct {
+	Target string `json:"target"`
+}
 
 func main() {
 	// Disable TLS certificate verification
@@ -22,8 +28,14 @@ func main() {
 		}
 
 		// Update DNS
-		fmt.Printf("%s Updating DNS for [dkb.crabdance.com]...\n", time.Now().Format(time.RFC3339))
-		resp, err := http.Get("http://freedns.afraid.org/dynamic/update.php?b24zWGdmOGpMbXZhcmFCOVZHZXBlckM4OjIxNzg0NDM2")
+		targetUrl, err := getTargetUrl()
+		if err != nil {
+			fmt.Printf("%s Failed to retrieve target url from config.json", time.Now().Format(time.RFC3339))
+		} else {
+			fmt.Printf("%s Updating DNS for [dkb.crabdance.com]...\n", time.Now().Format(time.RFC3339))
+		}
+
+		resp, err := http.Get(targetUrl)
 		if err != nil {
 			fmt.Printf("%s Error updating DNS: %s\n", time.Now().Format(time.RFC3339), err.Error())
 		} else {
@@ -52,4 +64,19 @@ func getCurrentIP() (string, error) {
 		return "", err
 	}
 	return string(ip), nil
+}
+
+func getTargetUrl() (string, error) {
+	configFile, err := os.Open("config.json")
+	if err != nil {
+		fmt.Println("Error opening config file:", err)
+		return "", nil
+	}
+	defer configFile.Close()
+	var config Config
+	if err := json.NewDecoder(configFile).Decode(&config); err != nil {
+		fmt.Println("Error decoding config file:", err)
+		return "", nil
+	}
+	return string(config.Target), nil
 }
