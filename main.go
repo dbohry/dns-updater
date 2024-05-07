@@ -35,7 +35,7 @@ func main() {
 			fmt.Printf("%s Updating DNS for [dkb.crabdance.com]...\n", time.Now().Format(time.RFC3339))
 		}
 
-		resp, err := http.Get(targetUrl)
+		resp, err := http.Get("http://" + targetUrl)
 		if err != nil {
 			fmt.Printf("%s Error updating DNS: %s\n", time.Now().Format(time.RFC3339), err.Error())
 		} else {
