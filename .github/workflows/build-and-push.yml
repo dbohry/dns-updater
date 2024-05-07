@@ -13,11 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check Go version
-        run: go version
-
-      - name: Install Go dependencies
-        run: go mod download
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.22
 
       - name: Compile Go application
         run: CGO_ENABLED=0 GOOS=linux go build -a -o app .
@@ -26,7 +25,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
         run: docker build -t dbohry/dns-updater:latest .
