@@ -28,13 +28,16 @@ func main() {
 		}
 
 		// Update DNS
-		targetUrl, err := getTargetUrl()
-		if err != nil {
-			fmt.Printf("%s Failed to retrieve target url from config.json", time.Now().Format(time.RFC3339))
-		} else {
-			fmt.Printf("%s Updating DNS for [dkb.crabdance.com]...\n", time.Now().Format(time.RFC3339))
-			fmt.Printf("%s Calling target url %s\n", time.Now().Format(time.RFC3339), targetUrl)
+		targetUrl := os.Getenv("TARGET_URL")
+		if targetUrl == "" {
+			targetUrl, err = getTargetUrl()
+			if err != nil {
+				fmt.Printf("%s Failed to retrieve target url from config.json", time.Now().Format(time.RFC3339))
+				return
+			}
 		}
+
+		fmt.Printf("%s Updating DNS for [dkb.crabdance.com]...\n", time.Now().Format(time.RFC3339))
 
 		resp, err := http.Get(targetUrl)
 		if err != nil {
