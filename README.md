@@ -18,16 +18,16 @@ The program fetches the current public IP address from the specified IP provider
 https://hub.docker.com/repository/docker/dbohry/dns-updater/general
 
 #### Compiling
-``
+```
 CGO_ENABLED=0 GOOS=linux go build -a -o app .
-``
+```
 
 #### Build local docker image
-``
+```
 docker build -t dns-updater:local .
-``
+```
 
 #### Run
-``
+```
 docker run --rm -e TARGET_URL={url} dns-updater:local
-``
+```
