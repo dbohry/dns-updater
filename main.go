@@ -25,7 +25,7 @@ func main() {
 		// Update DNS
 		targetUrl := os.Getenv("TARGET_URL")
 		if targetUrl == "" {
-			fmt.Printf("%s TARGET_URL env not found", time.Now().Format(time.RFC3339))
+			fmt.Printf("%s TARGET_URL env not found\n", time.Now().Format(time.RFC3339))
 			return
 		}
 
