@@ -2,17 +2,12 @@ package main
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"time"
 )
-
-type Config struct {
-	Target string `json:"target"`
-}
 
 func main() {
 	// Disable TLS certificate verification
@@ -30,14 +25,11 @@ func main() {
 		// Update DNS
 		targetUrl := os.Getenv("TARGET_URL")
 		if targetUrl == "" {
-			targetUrl, err = getTargetUrl()
-			if err != nil {
-				fmt.Printf("%s Failed to retrieve target url from config.json", time.Now().Format(time.RFC3339))
-				return
-			}
+			fmt.Printf("%s TARGET_URL env not found", time.Now().Format(time.RFC3339))
+			return
 		}
 
-		fmt.Printf("%s Updating DNS for [dkb.crabdance.com]...\n", time.Now().Format(time.RFC3339))
+		fmt.Printf("%s Updating DNS...\n", time.Now().Format(time.RFC3339))
 
 		resp, err := http.Get(targetUrl)
 		if err != nil {
@@ -72,19 +64,4 @@ func getCurrentIP() (string, error) {
 		return "", err
 	}
 	return string(ip), nil
-}
-
-func getTargetUrl() (string, error) {
-	configFile, err := os.Open("config.json")
-	if err != nil {
-		fmt.Println("Error opening config file:", err)
-		return "", nil
-	}
-	defer configFile.Close()
-	var config Config
-	if err := json.NewDecoder(configFile).Decode(&config); err != nil {
-		fmt.Println("Error decoding config file:", err)
-		return "", nil
-	}
-	return string(config.Target), nil
 }
