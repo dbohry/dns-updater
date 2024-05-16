@@ -13,6 +13,8 @@ func main() {
 	// Disable TLS certificate verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
+	var currentIp = ""
+
 	for {
 		// Get current IP address
 		ip, err := getCurrentIP()
@@ -31,16 +33,21 @@ func main() {
 
 		fmt.Printf("%s Updating DNS...\n", time.Now().Format(time.RFC3339))
 
-		resp, err := http.Get(targetUrl)
-		if err != nil {
-			fmt.Printf("%s Error updating DNS: %s\n", time.Now().Format(time.RFC3339), err.Error())
+		if currentIp == ip {
+			fmt.Printf("%s No IP changes...\n", time.Now().Format(time.RFC3339))
 		} else {
-			body, err := io.ReadAll(resp.Body)
-			resp.Body.Close()
+			resp, err := http.Get(targetUrl)
 			if err != nil {
-				fmt.Printf("%s Error reading response body: %s\n", time.Now().Format(time.RFC3339), err.Error())
+				fmt.Printf("%s Error updating DNS: %s\n", time.Now().Format(time.RFC3339), err.Error())
 			} else {
-				fmt.Printf("%s Updated. Response: %s\n", time.Now().Format(time.RFC3339), body)
+				body, err := io.ReadAll(resp.Body)
+				resp.Body.Close()
+				if err != nil {
+					fmt.Printf("%s Error reading response body: %s\n", time.Now().Format(time.RFC3339), err.Error())
+				} else {
+					fmt.Printf("%s 200 OK: %s\n", time.Now().Format(time.RFC3339), body)
+					currentIp = ip
+				}
 			}
 		}
 
