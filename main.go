@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -26,6 +28,17 @@ func main() {
 
 		// Update DNS
 		targetUrl := os.Getenv("TARGET_URL")
+		notifyUrl := os.Getenv("NOTIFY_URL")
+		frequency := os.Getenv("FREQUENCY")
+
+		if notifyUrl == "" {
+			notifyUrl = "https://default.url"
+		}
+
+		if frequency == "" {
+			frequency = "600"
+		}
+
 		if targetUrl == "" {
 			fmt.Printf("%s TARGET_URL env not found\n", time.Now().Format(time.RFC3339))
 			return
@@ -47,12 +60,15 @@ func main() {
 				} else {
 					fmt.Printf("%s 200 OK: %s\n", time.Now().Format(time.RFC3339), body)
 					currentIp = ip
+
+					notify("Your IP was updated to: "+ip, notifyUrl)
 				}
 			}
 		}
 
-		// Sleep for 600 seconds (10 minutes)
-		time.Sleep(600 * time.Second)
+		fmt.Printf("%s Sleeping for: %s seconds\n", time.Now().Format(time.RFC3339), frequency)
+		duration, err := strconv.Atoi(frequency)
+		time.Sleep(time.Duration(duration) * time.Second)
 	}
 }
 
@@ -71,4 +87,15 @@ func getCurrentIP() (string, error) {
 		return "", err
 	}
 	return string(ip), nil
+}
+
+func notify(message, url string) {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+
+	resp, err := http.Post(url, "application/x-www-form-urlencoded", strings.NewReader(message))
+	if err != nil {
+		fmt.Println("Failed to send notification:", err)
+		return
+	}
+	defer resp.Body.Close()
 }
